@@ -236,7 +236,11 @@
 				
 				console.log("Defining notifications." + type + " to " + value);
 				notifications[type] = value;
-			})
+				
+				// Specific case for global 'enable notifications' button
+				if(type == "enabled")
+					value ? $("#notifDetails").slideDown("slow") : $("#notifDetails").slideUp("slow");
+			});
 		</script>
 
 	</body>
