@@ -83,6 +83,9 @@
 							</span>
 						</div>
 					</div>
+					<div id="notifButton" class="hide" style="text-align: center;">
+						<button onclick="activateNotifications()" class="btn btn-info">Activer les notifications</button>
+					</div>
 					<center class="muted">(actualisation automatique)</center>
 				</span>
 				<span class="span9 panel">
@@ -140,6 +143,10 @@
 			}
 			refresh();
 			window.setInterval(refresh, 5000);
+			
+			if(Notification) {
+				$("#notifButton").show();
+			}
 		</script>
 
 	</body>
