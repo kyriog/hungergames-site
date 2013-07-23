@@ -59,7 +59,30 @@
 
 			<div class="row-fluid">
 				<span class="span3 panel">
-					<div id="refresh" class="well"></div>
+					<div id="refresh" class="well">
+						<div id="ingame" class="hide" style="text-align: center;">
+							<span style="font-weight: bold;">Une partie est</span>
+							<br />
+							<span class="text-error" style="font-size: 25px;">
+								EN COURS
+							</span>
+							<br />
+							<hr />
+							<span style="font-weight: bold;">
+								<span class="players"></span> joueurs restants
+							</span>
+						</div>
+						<div id="waiting" class="hide" style="text-align: center;">
+							<span class="text-success" style="font-size: 25px; font-weight: bold;">
+								EN ATTENTE
+							</span>
+							<br />
+							<hr />
+							<span class="font-weight: bold;">
+								<span class="available"></span> places disponibles !
+							</span>
+						</div>
+					</div>
 					<center class="muted">(actualisation automatique)</center>
 				</span>
 				<span class="span9 panel">
@@ -86,15 +109,37 @@
 		</div>
 
 		<script type="text/javascript">
-			$('#refresh').load('/?echo');
-			window.setInterval(function(){ $('#refresh').load('/?echo'); }, 20000);
-		</script>
-		<script type="text/javascript">
-
-
-
-			window.webkitNotifications.requestPermission();
-
+			var refresh = function() {
+				var display = function(statusId) {
+					$("#" + statusId).slideDown("slow");
+					$("#" + statusId).addClass("active");
+				}
+				
+				$.ajax({
+					url: "./status.json",
+					dataType: "json",
+					success: function(data) {
+						if($("#refresh .active").attr("id") == undefined) {
+							display(data.status);
+						} else if($("#refresh .active").attr("id") != data.status) {
+							$("#refresh .active").slideUp("slow", function() {
+								display(data.status);
+							});
+							$("#refresh .active").removeClass("active");
+						}
+						
+						switch(data.status) {
+							case "ingame":
+								$("#ingame .players").text(data.players);
+								break;
+							case "waiting":
+								$("#waiting .available").text(data.available);
+						}
+					}
+				})
+			}
+			refresh();
+			window.setInterval(refresh, 5000);
 		</script>
 
 	</body>
