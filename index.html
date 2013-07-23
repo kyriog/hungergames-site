@@ -83,8 +83,17 @@
 							</span>
 						</div>
 					</div>
-					<div id="notifButton" class="hide" style="text-align: center;">
-						<button onclick="activateNotifications()" class="btn btn-info">Activer les notifications</button>
+					<div style="text-align: center;">
+						<button id="notifButton" class="hide btn btn-info" onclick="activateNotifications()">
+							Activer les notifications
+						</button>
+						<span id="notifAsk" class="hide">
+							<img src="./assets/loader.gif" alt="" />
+							En attente d'autorisation…
+						</span>
+						<span id="notifRefused" class="hide label label-important">
+							Notifications non autorisées
+						</span>
 					</div>
 					<center class="muted">(actualisation automatique)</center>
 				</span>
@@ -97,6 +106,26 @@
 								<br>
 								<span class="muted">(compte officiel requis)</span>
 							</center>
+							<div id="notifCenter" class="hide">
+								<label class="checkbox">
+									<input type="checkbox" id="notifActivate" checked="checked" />
+									Activer les notifications
+								</label>
+								<div style="margin-left: 20px;" id="notifDetails">
+									<label class="checkbox">
+										<input type="checkbox" id="notifPrevent" />
+										Prévenir lorsqu'il ne reste que 2 joueurs
+									</label>
+									<label class="checkbox">
+										<input type="checkbox" id="notifWaiting" checked="checked" />
+										Alerter lorsqu'une nouvelle partie débute
+									</label>
+									<label class="checkbox">
+										<input type="checkbox" id="notifFinish">
+										Afficher un message lorsqu'une partie se termine
+									</label>
+								</div>
+							</div>
 						</div>
 						<div class="tab-pane fade" id="kits">
 							<br>
@@ -146,6 +175,21 @@
 			
 			if(Notification) {
 				$("#notifButton").show();
+			}
+			var activateNotifications = function() {
+				$("#notifButton").hide();
+				$("#notifAsk").show();
+				Notification.requestPermission(function(perm) {
+					$("#notifAsk").hide();
+					switch(perm) {
+						case "granted":
+							$("#notifCenter").slideDown("slow");
+							break;
+						case "default":
+						case "denied":
+							$("#notifRefused").show();
+					}
+				})
 			}
 		</script>
 
