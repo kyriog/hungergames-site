@@ -121,13 +121,19 @@
 										Alerter lorsqu'une partie est prête à accueillir des joueurs
 									</label>
 									<label class="checkbox">
-										<input type="checkbox" id="notifStarted" class="notifPref" data-notif="started">
+										<input type="checkbox" id="notifStarted" class="notifPref" data-notif="started" />
 										Afficher un message lorsqu'une partie vient de démarrer et qu'il n'est plus possible de rejoindre
 									</label>
 									<label class="checkbox">
-										<input type="checkbox" id="notifFull" class="notifPref" data-notif="full">
+										<input type="checkbox" id="notifFull" class="notifPref" data-notif="full" />
 										Indiquer qu'une partie en attente est pleine
 									</label>
+									<div style="margin-left:20px;" id="notifNotMoreFull" class="hide">
+										<label class="checkbox">
+											<input type="checkbox" id="notifRenotify" class="notifPref" data-notif="renotify" checked="checked" />
+											Notifier si une place se libère sur le serveur
+										</label>
+									</div>
 								</div>
 							</div>
 						</div>
@@ -152,7 +158,8 @@
 				waiting: true,
 				started: false,
 				full: false,
-				fullDisplayed: false
+				fullDisplayed: false,
+				renotify: true
 			}
 			var initVars = function() {
 				if(!$("#notifEnabled").is(":checked")) {
@@ -164,6 +171,10 @@
 				notifications.waiting = $("#notifWaiting").is(":checked");
 				notifications.started = $("#notifStarted").is(":checked");
 				notifications.full = $("#notifFull").is(":checked");
+				notifications.renotify = $("#notifRenotify").is(":checked");
+				
+				if(notifications.full)
+					$("#notifNotMoreFull").show();
 			}
 			initVars();
 			
@@ -235,17 +246,29 @@
 							case "waiting":
 								$("#waiting .available").text(data.available);
 								if(notifications.enabled
-								&& notifications.full
-								&& data.available == 0
-								&& !notifications.fullDisplayed) {
-									console.log("Displaying server full notification");
-									notifications.fullDisplayed = true;
-									new Notification("Le serveur est plein :(", {
-											dir: "auto",
-											lang: "fr",
-											body: "La partie en attente est pleine, vous ne pouvez pas la rejoindre",
-											tag: "hungergames-shellgratuit",
-									});
+								&& notifications.full) {
+									if(data.available == 0
+									&& !notifications.fullDisplayed) {
+										console.log("Displaying server full notification");
+										notifications.fullDisplayed = true;
+										new Notification("Le serveur est plein :(", {
+												dir: "auto",
+												lang: "fr",
+												body: "La partie en attente est pleine, vous ne pouvez pas la rejoindre",
+												tag: "hungergames-shellgratuit",
+										});
+									} else if(notifications.renotify
+									       && data.available != 0
+									       && notifications.fullDisplayed) {
+										console.log("Displaying slot available notification");
+										notifications.fullDisplayed = false;
+										new Notification("Une place est de nouveau disponible !", {
+												dir: "auto",
+												lang: "fr",
+												body: "Une place vient de se libérer sur le serveur, rejoignez le vite avant qu'elle ne soit prise",
+												tag: "hungergames-shellgratuit",
+										});
+									}
 								}
 						}
 					}
@@ -284,9 +307,13 @@
 				console.log("Defining notifications." + type + " to " + value);
 				notifications[type] = value;
 				
-				// Specific case for global 'enable notifications' button
-				if(type == "enabled")
-					value ? $("#notifDetails").slideDown("slow") : $("#notifDetails").slideUp("slow");
+				switch(type) {
+					case "enabled":
+						value ? $("#notifDetails").slideDown("slow") : $("#notifDetails").slideUp("slow");
+						break;
+					case "full":
+						value ? $("#notifNotMoreFull").slideDown("slow") : $("#notifNotMoreFull").slideUp("slow");
+				}
 			});
 		</script>
 
