@@ -1,0 +1,101 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Hunger Games</title>
+		<link href="./assets/bootstrap.css" rel="stylesheet">
+		<script type='text/javascript' src='./assets/jquery.min.js'></script>
+		<script type='text/javascript' src='./assets/bootstrap.min.js'></script>
+		<style type="text/css">
+			@import url(http://fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,400,600);
+			@import url(http://fonts.googleapis.com/css?family=Trade+Winds);
+			/* Corrections Bootstrap */ .btn { background-image: none; }     
+			body { font-size: 13px; font-family: 'Open Sans', sans-serif; background: url(assets/background.png);}
+			.container { margin-right: auto; margin-left: auto; }
+
+			.panel {
+				/*background-color: #FFF;*/
+				min-height: 200px;
+				background-color: #FAFAFA;
+				background-repeat: repeat-x;
+				border-radius: 4px 4px 4px 4px;
+				box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.50);
+				margin-top: 10px; margin-bottom: 10px; padding: 10px;
+			}
+
+			.kit_title { font-family: 'Trade Winds', cursive; font-size: 30px; }
+
+			.footer {
+				text-align: center;
+				font-size: 11px;
+				color: #FFFFFF;
+				margin-top: 30px;
+				padding: 0px 10px 20px 10px;
+			}
+
+			hr { clear: both; border: 0; border-top: 1px solid #ccc; min-height: 0px; height: 1px; }
+			hr.dot { border-style: dotted; }
+
+		</style>
+	</head>
+
+	<body>
+		<div class="container">
+
+			<center><img src="assets/hg_logo.png" width="300"></center>
+
+			<div class="navbar">
+				<div class="navbar-inner">
+					<ul class="nav">
+					<a class="brand" href="#home" data-toggle="tab">Hunger Games</a>
+					<li class="active"><a href="#home" data-toggle="tab">Accueil</a></li>
+					<li><a href="#kits" data-toggle="tab">Kits</a></li>
+					<li><a href="http://shellgratuit.com/hg/tracker/">Tracker</a></li>
+					</ul>
+				</div>
+			</div>
+
+
+			<div class="row-fluid">
+				<span class="span3 panel">
+					<div id="refresh" class="well"></div>
+					<center class="muted">(actualisation automatique)</center>
+				</span>
+				<span class="span9 panel">
+					<div class="tab-content">
+						<div class="tab-pane fade in active" id="home">
+							<center>
+								Adresse du serveur :<br>
+								<span class="btn btn-large"><strong>shellgratuit.com</strong></span><br>
+								<br>
+								<span class="muted">(compte officiel requis)</span>
+							</center>
+						</div>
+						<div class="tab-pane fade" id="kits">
+							<br>
+							<span class="kit_title">Barbare</span> - Reçoit une épée en pierre<hr><span class="kit_title">Cultivateur</span> - Fait pousser graines et arbres instantanément<hr><span class="kit_title">Enchanteur</span> - Reçoit une table d'enchantement<hr><span class="kit_title">Healer</span> - Reçoit des potions de vie<hr><span class="kit_title">Pyromane</span> - Reçoit un briquet et un livre enchanté Fire Aspect<hr><span class="kit_title">Archer</span> - Reçoit un arc et des flèches<hr><span class="kit_title">Bonto</span> - A une chance de mélanger la hotbar de son adversaire en combat<hr><span class="kit_title">Kamikaze</span> - Reçoit des TNT, explose en mourrant<hr><span class="kit_title">CookieMonster</span> - Ramasse des cookies en cassant les hautes herbes, donne un buff de force<hr><span class="kit_title">Forgeron</span> - En minant du fer/de l'or, ramasse soit le lingot, soit rien du tout<hr><span class="kit_title">Caméléon</span> - En tapant un mob, se déguise en ce mob<hr><span class="kit_title">Stomper</span> - Fait des dégâts autour de lui en prenant des dégâts de chute<hr><span class="kit_title">Bûcheron</span> - Reçoit une hache, casse les arbres entiers en un coup<hr><span class="kit_title">Heavy</span> - Reçoit des coeurs supplémentaires<hr>                        </div>
+					</div>
+				</span>
+			</div>
+			<br>
+			<div class="footer">
+				<p class="muted credit">© 2013 mGeek <a href="http://twitter.com/mGeek_">(twitter)</a></p>
+			</div>
+
+		</div>
+
+		<script type="text/javascript">
+			$('#refresh').load('/?echo');
+			window.setInterval(function(){ $('#refresh').load('/?echo'); }, 20000);
+		</script>
+		<script type="text/javascript">
+
+
+
+			window.webkitNotifications.requestPermission();
+
+		</script>
+
+	</body>
+</html>
