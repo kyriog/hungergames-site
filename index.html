@@ -118,11 +118,11 @@
 									</label>
 									<label class="checkbox">
 										<input type="checkbox" id="notifWaiting" class="notifPref" data-notif="waiting" checked="checked" />
-										Alerter lorsqu'une nouvelle partie débute
+										Alerter lorsqu'une partie est prête à accueillir des joueurs
 									</label>
 									<label class="checkbox">
-										<input type="checkbox" id="notifFinish" class="notifPref" data-notif="finish">
-										Afficher un message lorsqu'une partie se termine
+										<input type="checkbox" id="notifStarted" class="notifPref" data-notif="started">
+										Afficher un message lorsqu'une partie vient de démarrer et qu'il n'est plus possible de rejoindre
 									</label>
 								</div>
 							</div>
@@ -146,7 +146,7 @@
 				prevent: false,
 				preventDisplayed: false,
 				waiting: true,
-				finish: false
+				started: false
 			}
 			var initVars = function() {
 				if(!$("#notifEnabled").is(":checked")) {
@@ -156,7 +156,7 @@
 				
 				notifications.prevent = $("#notifPrevent").is(":checked");
 				notifications.waiting = $("#notifWaiting").is(":checked");
-				notifications.finish = $("#notifFinish").is(":checked");
+				notifications.started = $("#notifStarted").is(":checked");
 			}
 			initVars();
 			
@@ -180,16 +180,20 @@
 							});
 							$("#refresh .active").removeClass("active");
 							
-							if(notifications.enabled
-							&& notifications.waiting
-							&& data.status == "waiting") {
-								console.log("Displaying new game notification");
-								new Notification("Une partie vient de commencer !", {
-										dir: "auto",
-										lang: "fr",
-										body: "Le serveur vient de passer en attente, rejoignez le vite si vous voulez jouer",
-										tag: "hungergames-shellgratuit",
-								});
+							if(notifications.enabled) {
+								switch(data.status) {
+									case "waiting":
+										if(notifications.waiting) {
+											console.log("Displaying waiting for players notification");
+											new Notification("Une partie vous attend !", {
+													dir: "auto",
+													lang: "fr",
+													body: "Le serveur vient de passer en attente, rejoignez le vite si vous voulez jouer",
+													tag: "hungergames-shellgratuit",
+											});
+										}
+										break;
+								}
 							}
 						}
 						
