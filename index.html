@@ -279,7 +279,7 @@
 			window.setInterval(refresh, 2000);
 			
 			if(Notification) {
-				$("#notifButton").show();
+				Notification.permission == "granted" ? $("#notifCenter").show() : $("#notifButton").show();
 			}
 			var activateNotifications = function() {
 				console.log("Trying to enable notifications");
