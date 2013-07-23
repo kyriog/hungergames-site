@@ -186,10 +186,11 @@
 				
 				var displayNotif = function(data) {
 					new Notification(data.title, {
-							dir: "auto",
-							lang: "fr",
-							body: data.body,
-							tag: "hungergames-shellgratuit",
+						body: data.body,
+						dir: "auto",
+						icon: "./assets/minecraft_logo.png",
+						lang: "fr",	
+						tag: "hungergames-shellgratuit"
 					});
 				}
 				
