@@ -124,6 +124,10 @@
 										<input type="checkbox" id="notifStarted" class="notifPref" data-notif="started">
 										Afficher un message lorsqu'une partie vient de démarrer et qu'il n'est plus possible de rejoindre
 									</label>
+									<label class="checkbox">
+										<input type="checkbox" id="notifFull" class="notifPref" data-notif="full">
+										Indiquer qu'une partie en attente est pleine
+									</label>
 								</div>
 							</div>
 						</div>
@@ -146,7 +150,9 @@
 				prevent: false,
 				preventDisplayed: false,
 				waiting: true,
-				started: false
+				started: false,
+				full: false,
+				fullDisplayed: false
 			}
 			var initVars = function() {
 				if(!$("#notifEnabled").is(":checked")) {
@@ -157,6 +163,7 @@
 				notifications.prevent = $("#notifPrevent").is(":checked");
 				notifications.waiting = $("#notifWaiting").is(":checked");
 				notifications.started = $("#notifStarted").is(":checked");
+				notifications.full = $("#notifFull").is(":checked");
 			}
 			initVars();
 			
@@ -175,6 +182,7 @@
 							display(data.status);
 						} else if(activeId != data.status) {
 							notifications.preventDisplayed = false;
+							notifications.fullDisplayed = false;
 							$("#refresh .active").slideUp("slow", function() {
 								display(data.status);
 							});
@@ -226,6 +234,19 @@
 								break;
 							case "waiting":
 								$("#waiting .available").text(data.available);
+								if(notifications.enabled
+								&& notifications.full
+								&& data.available == 0
+								&& !notifications.fullDisplayed) {
+									console.log("Displaying server full notification");
+									notifications.fullDisplayed = true;
+									new Notification("Le serveur est plein :(", {
+											dir: "auto",
+											lang: "fr",
+											body: "La partie en attente est pleine, vous ne pouvez pas la rejoindre",
+											tag: "hungergames-shellgratuit",
+									});
+								}
 						}
 					}
 				})
