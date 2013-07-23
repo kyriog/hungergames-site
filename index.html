@@ -184,6 +184,15 @@
 					$("#" + statusId).addClass("active");
 				}
 				
+				var displayNotif = function(data) {
+					new Notification(data.title, {
+							dir: "auto",
+							lang: "fr",
+							body: data.body,
+							tag: "hungergames-shellgratuit",
+					});
+				}
+				
 				$.ajax({
 					url: "./status.json",
 					dataType: "json",
@@ -204,22 +213,18 @@
 									case "waiting":
 										if(notifications.waiting) {
 											console.log("Displaying waiting for players notification");
-											new Notification("Une partie vous attend !", {
-													dir: "auto",
-													lang: "fr",
-													body: "Le serveur vient de passer en attente, rejoignez le vite si vous voulez jouer",
-													tag: "hungergames-shellgratuit",
+											displayNotif({
+												title: "Une partie vous attend !",
+												body: "Le serveur vient de passer en attente, rejoignez le vite si vous voulez jouer"
 											});
 										}
 										break;
 									case "ingame":
 										if(notifications.started) {
 											console.log("Displaying new game notification");
-											new Notification("Une partie vient de démarrer", {
-													dir: "auto",
-													lang: "fr",
-													body: "Vous ne pouvez plus rejoindre le serveur",
-													tag: "hungergames-shellgratuit",
+											displayNotif({
+												title: "Une partie vient de démarrer",
+												body: "Vous ne pouvez plus rejoindre le serveur"
 											});
 										}
 								}
@@ -235,11 +240,9 @@
 								&& !notifications.preventDisplayed) {
 									console.log("Displaying prevent notification");
 									notifications.preventDisplayed = true;
-									new Notification("Une partie va bientôt démarrer !", {
-											dir: "auto",
-											lang: "fr",
-											body: "Il ne reste plus que deux joueurs dans la partie en cours",
-											tag: "hungergames-shellgratuit",
+									displayNotif({
+										title: "Une partie va bientôt démarrer !",
+										body: "Il ne reste plus que deux joueurs dans la partie en cours"
 									});
 								}
 								break;
@@ -251,22 +254,18 @@
 									&& !notifications.fullDisplayed) {
 										console.log("Displaying server full notification");
 										notifications.fullDisplayed = true;
-										new Notification("Le serveur est plein :(", {
-												dir: "auto",
-												lang: "fr",
-												body: "La partie en attente est pleine, vous ne pouvez pas la rejoindre",
-												tag: "hungergames-shellgratuit",
+										displayNotif({
+											title: "Le serveur est plein :(",
+											body: "La partie en attente est pleine, vous ne pouvez pas la rejoindre"
 										});
 									} else if(notifications.renotify
 									       && data.available != 0
 									       && notifications.fullDisplayed) {
 										console.log("Displaying slot available notification");
 										notifications.fullDisplayed = false;
-										new Notification("Une place est de nouveau disponible !", {
-												dir: "auto",
-												lang: "fr",
-												body: "Une place vient de se libérer sur le serveur, rejoignez le vite avant qu'elle ne soit prise",
-												tag: "hungergames-shellgratuit",
+										displayNotif({
+											title: "Une place est de nouveau disponible !",
+											body: "Une place vient de se libérer sur le serveur, rejoignez le vite avant qu'elle ne soit prise"
 										});
 									}
 								}
