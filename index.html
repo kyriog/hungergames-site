@@ -178,22 +178,23 @@
 			}
 			initVars();
 			
+			
+			var display = function(statusId) {
+				$("#" + statusId).slideDown("slow");
+				$("#" + statusId).addClass("active");
+			}
+			
+			var displayNotif = function(data) {
+				new Notification(data.title, {
+					body: data.body,
+					dir: "auto",
+					icon: "./assets/minecraft_logo.png",
+					lang: "fr",	
+					tag: "hungergames-shellgratuit"
+				});
+			}
+			
 			var refresh = function() {
-				var display = function(statusId) {
-					$("#" + statusId).slideDown("slow");
-					$("#" + statusId).addClass("active");
-				}
-				
-				var displayNotif = function(data) {
-					new Notification(data.title, {
-						body: data.body,
-						dir: "auto",
-						icon: "./assets/minecraft_logo.png",
-						lang: "fr",	
-						tag: "hungergames-shellgratuit"
-					});
-				}
-				
 				$.ajax({
 					url: "./status.json",
 					dataType: "json",
