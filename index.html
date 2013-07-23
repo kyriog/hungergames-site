@@ -193,6 +193,16 @@
 											});
 										}
 										break;
+									case "ingame":
+										if(notifications.started) {
+											console.log("Displaying new game notification");
+											new Notification("Une partie vient de démarrer", {
+													dir: "auto",
+													lang: "fr",
+													body: "Vous ne pouvez plus rejoindre le serveur",
+													tag: "hungergames-shellgratuit",
+											});
+										}
 								}
 							}
 						}
