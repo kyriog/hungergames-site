@@ -108,20 +108,20 @@
 							</center>
 							<div id="notifCenter" class="hide">
 								<label class="checkbox">
-									<input type="checkbox" id="notifActivate" checked="checked" />
+									<input type="checkbox" id="notifEnabled" class="notifPref" data-notif="enabled" checked="checked" />
 									Activer les notifications
 								</label>
 								<div style="margin-left: 20px;" id="notifDetails">
 									<label class="checkbox">
-										<input type="checkbox" id="notifPrevent" />
+										<input type="checkbox" id="notifPrevent" class="notifPref" data-notif="prevent" />
 										Prévenir lorsqu'il ne reste que 2 joueurs
 									</label>
 									<label class="checkbox">
-										<input type="checkbox" id="notifWaiting" checked="checked" />
+										<input type="checkbox" id="notifWaiting" class="notifPref" data-notif="waiting" checked="checked" />
 										Alerter lorsqu'une nouvelle partie débute
 									</label>
 									<label class="checkbox">
-										<input type="checkbox" id="notifFinish">
+										<input type="checkbox" id="notifFinish" class="notifPref" data-notif="finish">
 										Afficher un message lorsqu'une partie se termine
 									</label>
 								</div>
@@ -141,6 +141,25 @@
 		</div>
 
 		<script type="text/javascript">
+			var notifications = {
+				enabled: false,
+				prevent: false,
+				preventDisplayed: false,
+				waiting: true,
+				finish: false
+			}
+			var initVars = function() {
+				if(!$("#notifEnabled").is(":checked")) {
+					console.warn("'Enable notifications' checkbox is unchecked, checking it");
+					$("#notifEnabled").prop("checked", true);
+				}
+				
+				notifications.prevent = $("#notifPrevent").is(":checked");
+				notifications.waiting = $("#notifWaiting").is(":checked");
+				notifications.finish = $("#notifFinish").is(":checked");
+			}
+			initVars();
+			
 			var refresh = function() {
 				var display = function(statusId) {
 					$("#" + statusId).slideDown("slow");
@@ -151,18 +170,33 @@
 					url: "./status.json",
 					dataType: "json",
 					success: function(data) {
-						if($("#refresh .active").attr("id") == undefined) {
+						var activeId = $("#refresh .active").attr("id")
+						if(activeId == undefined) {
 							display(data.status);
-						} else if($("#refresh .active").attr("id") != data.status) {
+						} else if(activeId != data.status) {
+							notifications.preventDisplayed = false;
 							$("#refresh .active").slideUp("slow", function() {
 								display(data.status);
 							});
 							$("#refresh .active").removeClass("active");
 						}
-						
+						//console.log("passage");
 						switch(data.status) {
 							case "ingame":
 								$("#ingame .players").text(data.players);
+								if(notifications.enabled
+								&& notifications.prevent
+								&& data.players == 2
+								&& !notifications.preventDisplayed) {
+									console.log("Displaying prevent notification");
+									notifications.preventDisplayed = true;
+									new Notification("Une partie va bientôt démarrer !", {
+											dir: "auto",
+											lang: "fr",
+											body: "Il ne reste plus que deux joueurs dans la partie en cours",
+											tag: "hungergames-shellgratuit",
+									});
+								}
 								break;
 							case "waiting":
 								$("#waiting .available").text(data.available);
@@ -171,26 +205,38 @@
 				})
 			}
 			refresh();
-			window.setInterval(refresh, 5000);
+			window.setInterval(refresh, 2000);
 			
 			if(Notification) {
 				$("#notifButton").show();
 			}
 			var activateNotifications = function() {
+				console.log("Trying to enable notifications");
 				$("#notifButton").hide();
 				$("#notifAsk").show();
 				Notification.requestPermission(function(perm) {
 					$("#notifAsk").hide();
 					switch(perm) {
 						case "granted":
+							console.log("Notifications enabled successfully");
+							notifications.enabled = true;
 							$("#notifCenter").slideDown("slow");
 							break;
 						case "default":
+							console.log("Notifications permission is default");
 						case "denied":
+							console.log("Notifications are denied");
 							$("#notifRefused").show();
 					}
 				})
 			}
+			$(".notifPref").change(function() {
+				var type = $(this).attr("data-notif"),
+						value = $(this).is(":checked");
+				
+				console.log("Defining notifications." + type + " to " + value);
+				notifications[type] = value;
+			})
 		</script>
 
 	</body>
