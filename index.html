@@ -179,6 +179,18 @@
 								display(data.status);
 							});
 							$("#refresh .active").removeClass("active");
+							
+							if(notifications.enabled
+							&& notifications.waiting
+							&& data.status == "waiting") {
+								console.log("Displaying new game notification");
+								new Notification("Une partie vient de commencer !", {
+										dir: "auto",
+										lang: "fr",
+										body: "Le serveur vient de passer en attente, rejoignez le vite si vous voulez jouer",
+										tag: "hungergames-shellgratuit",
+								});
+							}
 						}
 						
 						switch(data.status) {
