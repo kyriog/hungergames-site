@@ -210,13 +210,16 @@
 			}
 			
 			var displayNotif = function(data) {
-				new Notification(data.title, {
+				var notif = new Notification(data.title, {
 					body: data.body,
 					dir: "auto",
 					icon: "./assets/minecraft_logo.png",
 					lang: "fr",	
 					tag: "hungergames-shellgratuit"
 				});
+				
+				if(data.callback)
+					notif.onclick = data.callback;
 			}
 			
 			var refresh = function() {
@@ -260,7 +263,13 @@
 											console.log("Displaying broken server notification");
 											displayNotif({
 												title: "Le serveur est cassé",
-												body: "Le serveur ne semble pas être dans son état normal. Serait-il malade ?"
+												body: "Le serveur ne semble pas être dans son état normal. Serait-il malade ?",
+												callback: function() {
+													var url = "https://twitter.com/intent/tweet?source=webclient&text=@shellgratuit Il semblerait que le serveur HG ne fonctionne plus correctement :(";
+													var options = "menubar=no,toolbar=no,status=no,width=600,height=450";
+													
+													window.open(url, "twitter", options);
+												}
 											})
 										}
 								}
