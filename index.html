@@ -206,7 +206,7 @@
 			
 			var refresh = function() {
 				$.ajax({
-					url: "./status.json",
+					url: "./status.php",
 					dataType: "json",
 					success: function(data) {
 						var activeId = $("#refresh .active").attr("id")
