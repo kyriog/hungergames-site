@@ -152,7 +152,8 @@
 
 		<script type="text/javascript">
 			var notifications = {
-				enabled: false,
+				activated: false,
+				enabled: true,
 				prevent: false,
 				preventDisplayed: false,
 				waiting: true,
@@ -160,24 +161,33 @@
 				full: false,
 				fullDisplayed: false,
 				renotify: true
+			};
+			if(localStorage) {
+				var types = ["enabled", "prevent", "waiting", "started", "full", "renotify"];
+				types.forEach(function(type) {
+					if(localStorage["hg-notifs-" + type])
+						notifications[type] = (localStorage["hg-notifs-" + type] === "true");
+				});
 			}
+			
 			var initVars = function() {
-				if(!$("#notifEnabled").is(":checked")) {
-					console.warn("'Enable notifications' checkbox is unchecked, checking it");
-					$("#notifEnabled").prop("checked", true);
-				}
+				$("#notifEnabled").prop("checked", notifications.enabled);
+				$("#notifPrevent").prop("checked", notifications.prevent);
+				$("#notifWaiting").prop("checked", notifications.waiting);
+				$("#notifStarted").prop("checked", notifications.started);
+				$("#notifFull").prop("checked", notifications.full);
+				$("#notifRenotify").prop("checked", notifications.renotify);
 				
-				notifications.prevent = $("#notifPrevent").is(":checked");
-				notifications.waiting = $("#notifWaiting").is(":checked");
-				notifications.started = $("#notifStarted").is(":checked");
-				notifications.full = $("#notifFull").is(":checked");
-				notifications.renotify = $("#notifRenotify").is(":checked");
-				
+				if(!notifications.enabled)
+					$("#notifDetails").hide();
 				if(notifications.full)
 					$("#notifNotMoreFull").show();
 			}
 			initVars();
 			
+			var checkNotifsEnabled = function() {
+				return (notifications.activated && notifications.enabled);
+			}
 			
 			var display = function(statusId) {
 				$("#" + statusId).slideDown("slow");
@@ -210,7 +220,7 @@
 							});
 							$("#refresh .active").removeClass("active");
 							
-							if(notifications.enabled) {
+							if(checkNotifsEnabled()) {
 								switch(data.status) {
 									case "waiting":
 										if(notifications.waiting) {
@@ -236,7 +246,7 @@
 						switch(data.status) {
 							case "ingame":
 								$("#ingame .players").text(data.players);
-								if(notifications.enabled
+								if(checkNotifsEnabled()
 								&& notifications.prevent
 								&& data.players == 2
 								&& !notifications.preventDisplayed) {
@@ -250,7 +260,7 @@
 								break;
 							case "waiting":
 								$("#waiting .available").text(data.available);
-								if(notifications.enabled
+								if(checkNotifsEnabled()
 								&& notifications.full) {
 									if(data.available == 0
 									&& !notifications.fullDisplayed) {
@@ -276,10 +286,14 @@
 				})
 			}
 			refresh();
-			window.setInterval(refresh, 2000);
+			window.setInterval(refresh, 20000);
 			
 			if(Notification) {
-				Notification.permission == "granted" ? $("#notifCenter").show() : $("#notifButton").show();
+				if(Notification.permission == "granted") {
+					$("#notifCenter").show();
+					notifications.activated = true;
+				} else
+					$("#notifButton").show();
 			}
 			var activateNotifications = function() {
 				console.log("Trying to enable notifications");
@@ -290,7 +304,7 @@
 					switch(perm) {
 						case "granted":
 							console.log("Notifications enabled successfully");
-							notifications.enabled = true;
+							notifications.activated = true;
 							$("#notifCenter").slideDown("slow");
 							break;
 						case "default":
@@ -307,6 +321,9 @@
 				
 				console.log("Defining notifications." + type + " to " + value);
 				notifications[type] = value;
+				
+				if(localStorage)
+					localStorage["hg-notifs-" + type] = value;
 				
 				switch(type) {
 					case "enabled":
