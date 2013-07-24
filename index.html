@@ -137,6 +137,10 @@
 										Signaler que le serveur ne répond pas correctement
 									</label>
 									<label class="checkbox">
+										<input type="checkbox" id="notifRemaining" class="notifPref" data-notif="remaining" />
+										Avertir qu'il reste moins de 10 places libres sur le serveur
+									</label>
+									<label class="checkbox">
 										<input type="checkbox" id="notifFull" class="notifPref" data-notif="full" />
 										Indiquer qu'une partie en attente est pleine
 									</label>
@@ -175,12 +179,14 @@
 				waiting: true,
 				started: false,
 				broken: false,
+				remaining: false,
+				remainingDisplayed: false,
 				full: false,
 				fullDisplayed: false,
 				renotify: true
 			};
 			if(localStorage) {
-				var types = ["enabled", "prevent", "waiting", "started", "broken", "full", "renotify"];
+				var types = ["enabled", "prevent", "waiting", "started", "broken", "remaining", "full", "renotify"];
 				types.forEach(function(type) {
 					if(localStorage["hg-notifs-" + type])
 						notifications[type] = (localStorage["hg-notifs-" + type] === "true");
@@ -193,6 +199,7 @@
 				$("#notifWaiting").prop("checked", notifications.waiting);
 				$("#notifStarted").prop("checked", notifications.started);
 				$("#notifBroken").prop("checked", notifications.broken);
+				$("#notifRemaining").prop("checked", notifications.remaining);
 				$("#notifFull").prop("checked", notifications.full);
 				$("#notifRenotify").prop("checked", notifications.renotify);
 				
@@ -236,6 +243,7 @@
 						} else if(activeId != data.status) {
 							notifications.preventDisplayed = false;
 							notifications.fullDisplayed = false;
+							notifications.remainingDisplayed = false;
 							$("#refresh .active").slideUp("slow", function() {
 								display(data.status);
 							});
@@ -314,6 +322,15 @@
 										displayNotif({
 											title: "Une place est de nouveau disponible !",
 											body: "Une place vient de se libérer sur le serveur, rejoignez le vite avant qu'elle ne soit prise"
+										});
+									} else if(notifications.remaining
+									       && data.available <= 10
+									       && !notifications.remainingDisplayed) {
+										console.log("Displaying few slots available notification");
+										notifications.remainingDisplayed = true;
+										displayNotif({
+											title: "Il reste moins de 10 places",
+											body: "Il ne reste plus que " + data.available + " places. Dépêchez-vous de rejoindre !"
 										});
 									}
 								}
