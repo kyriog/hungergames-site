@@ -130,6 +130,10 @@
 										Afficher un message lorsqu'une partie vient de démarrer et qu'il n'est plus possible de rejoindre
 									</label>
 									<label class="checkbox">
+										<input type="checkbox" id="notifBroken" class="notifPref" data-notif="broken" />
+										Signaler que le serveur ne répond pas correctement
+									</label>
+									<label class="checkbox">
 										<input type="checkbox" id="notifFull" class="notifPref" data-notif="full" />
 										Indiquer qu'une partie en attente est pleine
 									</label>
@@ -167,12 +171,13 @@
 				preventDisplayed: false,
 				waiting: true,
 				started: false,
+				broken: false,
 				full: false,
 				fullDisplayed: false,
 				renotify: true
 			};
 			if(localStorage) {
-				var types = ["enabled", "prevent", "waiting", "started", "full", "renotify"];
+				var types = ["enabled", "prevent", "waiting", "started", "broken", "full", "renotify"];
 				types.forEach(function(type) {
 					if(localStorage["hg-notifs-" + type])
 						notifications[type] = (localStorage["hg-notifs-" + type] === "true");
@@ -184,6 +189,7 @@
 				$("#notifPrevent").prop("checked", notifications.prevent);
 				$("#notifWaiting").prop("checked", notifications.waiting);
 				$("#notifStarted").prop("checked", notifications.started);
+				$("#notifBroken").prop("checked", notifications.broken);
 				$("#notifFull").prop("checked", notifications.full);
 				$("#notifRenotify").prop("checked", notifications.renotify);
 				
@@ -247,6 +253,15 @@
 												title: "Une partie vient de démarrer",
 												body: "Vous ne pouvez plus rejoindre le serveur"
 											});
+										}
+										break;
+									case "error":
+										if(notifications.broken) {
+											console.log("Displaying broken server notification");
+											displayNotif({
+												title: "Le serveur est cassé",
+												body: "Le serveur ne semble pas être dans son état normal. Serait-il malade ?"
+											})
 										}
 								}
 							}
